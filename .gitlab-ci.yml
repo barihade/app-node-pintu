@@ -2,6 +2,7 @@ image: docker:latest
 
 stages:
   - build
+  - test
 
 services:
   - docker:dind
@@ -15,3 +16,11 @@ build-node:
     - docker build -t "$CI_REGISTRY_IMAGE" app_node/.
     - docker push "$CI_REGISTRY_IMAGE"
     - echo "Compile complete and succsessfully stored to Docker Hub"
+
+test-node:
+  stage: test
+  script:
+    - docker run -d -p 3000:3000 "$CI_REGISTRY_IMAGE"
+    - apk add curl
+    - curl http://docker:3000
+    - echo "Successfully running on port 3000"
